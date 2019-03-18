@@ -5,6 +5,7 @@
 #ifndef MCS_4_EMULATOR_CHIPSET_H
 #define MCS_4_EMULATOR_CHIPSET_H
 
+#include <thread>
 
 #include "Ram.h"
 #include "Cpu.h"
@@ -12,15 +13,18 @@
 
 class Chipset {
 private:
-    Rom * const rom;
-    Ram * const ram;
-    Cpu * const cpu;
+    Rom *const rom;
+    Ram *const ram;
+    Cpu *const cpu;
 public:
-    Chipset();
+    explicit Chipset(const uint8_t prog[]);
 
-    explicit Chipset(uint8_t prog[]);
+    Chipset(const uint8_t prog[], uint8_t numRoms);
 
-    void powerOn();
+    std::thread powerOn();
+
+    void pauseCpu();
+    void signalCpu();
 };
 
 

@@ -8,11 +8,15 @@
 #include <cstddef>
 #include <stdint.h>
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
+#include <boost/signals2.hpp>
 
 #include "Rom.h"
 #include "Ram.h"
 #include "InstructionSet.h"
 #include "mcs4_stdint.h"
+#include "CpuInfo.h"
 
 class InstructionSet;
 
@@ -29,12 +33,8 @@ private:
     static const size_t STACK_SZ = 3;
     static const unsigned int CLOCK_SPEED = 750000;
 
-    // Other peripherals
-    Rom *const rom;
-    Ram *const ram;
-
-    uint8_t acc_cy: 5;                  // Accumulator + carry
-    uint8_t r [REG_NUM / 2];            // Registers: 16 x 4bit
+    mcs4::uint5_t acc_cy;                  // Accumulator + carry
+    uint8_t r[REG_NUM / 2];            // Registers: 16 x 4bit
 
     uint8_t data_ptr;
     mcs4::uint12_t code_ptr;   // Aka instruction pointer
@@ -42,9 +42,18 @@ private:
     mcs4::uint12_t stack[STACK_SZ];                  // Each "cell" is 12 bit wide
     uint8_t stack_ptr;
 
-    InstructionSet * const i_set;
+    InstructionSet *const i_set;
+
+    // Debugger/signaling related data
+    std::condition_variable pause_cond;
+    std::mutex mutex;
+    bool is_paused;
+
+    // Signal is sent to the outside world (i.e. debugger) when a CPU cycle starts
+    boost::signals2::signal<void(CpuInfo*)> cycle_sig;
 
     uint8_t readInstruction();
+
     uint8_t readSecondInstruction();
 
     void fetch(instr_p &instr, mcs4::uint12_t &modifier);
@@ -54,15 +63,22 @@ private:
     void waitClockTime(std::chrono::duration<double> exec_time);
 
     void runCycle();
+
 public:
+    // Other peripherals
+    Rom *const rom;
+    Ram *const ram;
+
     Cpu(Rom *const rom, Ram *const ram);
 
     // Accumulator and carry
 
     mcs4::uint4_t readAccumulator();
+
     void writeAccumulator(mcs4::uint4_t value);
 
     mcs4::uint1_t readCarry();
+
     void writeCarry(mcs4::uint1_t value);
 
     void writeAccumulatorAndCarry(mcs4::uint5_t value);
@@ -73,17 +89,26 @@ public:
     void writeRegister(mcs4::uint4_t index, mcs4::uint4_t value);
 
     uint8_t readDataPtr();
+
     void writeDataPtr(uint8_t value);
 
     mcs4::uint12_t readCodePtr();
+
     void writeCodePtr(mcs4::uint12_t addr);
 
     void incrementCodePtr();
 
     void pushStack();
+
     mcs4::uint12_t popStack();
 
     void run();
+
+    void pause();
+
+    void signal();
+
+    void attachInspector(void (*)(CpuInfo*));
 };
 
 

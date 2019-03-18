@@ -5,10 +5,12 @@
 #include <cstring>
 #include <thread>
 #include <iostream>
+
 #include "Cpu.h"
 #include "util.h"
 #include "Rom.h"
 #include "Ram.h"
+#include "CpuInfo.h"
 
 Cpu::Cpu(Rom *const rom, Ram *const ram) :
         rom(rom),
@@ -19,7 +21,8 @@ Cpu::Cpu(Rom *const rom, Ram *const ram) :
         code_ptr(0),
         stack{0},
         stack_ptr(0),
-        i_set(new InstructionSet(this)) {}
+        i_set(new InstructionSet(this)),
+        is_paused(false) {}
 
 uint8_t Cpu::readRegister(const uint8_t index) {
     // Registers are only 4 bit wide
@@ -183,7 +186,31 @@ mcs4::uint12_t Cpu::popStack() {
 }
 
 void Cpu::run() {
-    while (this->code_ptr < Rom::ROM_SZ) {
+    std::unique_lock<std::mutex> lock(this->mutex);
+    while (this->code_ptr < this->rom->romSz) {
+        // TODO: Move to function
+        CpuInfo info;
+        info.code_ptr = this->readCodePtr();
+        this->cycle_sig(&info);
+
+        // Handle pause/signal feature
+        while(this->is_paused) {
+            this->pause_cond.wait(lock);
+        }
         this->runCycle();
     }
+}
+
+void Cpu::pause() {
+    this->is_paused = true;
+}
+
+void Cpu::signal() {
+    std::unique_lock<std::mutex> lock(this->mutex);
+    this->is_paused = false;
+    this->pause_cond.notify_one();
+}
+
+void Cpu::attachInspector(void (*inspector)(CpuInfo*)) {
+    this->cycle_sig.connect(inspector);
 }

@@ -11,12 +11,16 @@
 #include "Rom.h"
 
 SpaceNotationProgramParser::SpaceNotationProgramParser(const char *filename) {
-    progfile.open(filename, std::ios::in);
+    this->progfile.open(filename, std::ios::in);
+
+    if (this->progfile.fail()) {
+        std::cerr << "Couldn't open program file " << filename << ". ROM chip will be empty." << std::endl;
+    }
 }
 
 void SpaceNotationProgramParser::parse(uint8_t *prog) {
     // Clear array
-    std::fill_n(prog, Rom::ROM_SZ, 0);
+    std::fill_n(prog, Rom::MAX_ROM_SZ, 0);
 
     mcs4::uint12_t addr = 0;
     std::string line;

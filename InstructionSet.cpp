@@ -165,7 +165,8 @@ void InstructionSet::wmp(mcs4::uint12_t) {
 }
 
 void InstructionSet::wrr(mcs4::uint12_t) {
-    notImplErr(__FUNCTION__);
+    // TODO: Same as read.
+    this->cpu->rom->writePort(this->cpu->readDataPtr(), this->cpu->readAccumulator());
 }
 
 void InstructionSet::wr0(mcs4::uint12_t) {
@@ -193,7 +194,8 @@ void InstructionSet::rdm(mcs4::uint12_t) {
 }
 
 void InstructionSet::rdr(mcs4::uint12_t) {
-    notImplErr(__FUNCTION__);
+    // TODO: Why is data pointer 8-bit wide but address space is 16-bit? Check
+    this->cpu->writeAccumulator(this->cpu->rom->readPort(this->cpu->readDataPtr()));
 }
 
 void InstructionSet::adm(mcs4::uint12_t) {
