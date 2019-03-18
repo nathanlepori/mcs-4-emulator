@@ -10,7 +10,9 @@ add_executable(mcs_4_emulator main.cpp Cpu.cpp Cpu.h Ram.cpp Ram.h Chipset.cpp C
 # see https://cmake.org/cmake/help/latest/module/FindBoost.html
 find_package(Boost REQUIRED COMPONENTS program_options)
 
+find_package(Threads REQUIRED)
+
 include_directories(${Boost_INCLUDE_DIR})
 
 # Note: a target should be already defined using 'add_executable' or 'add_library'
-target_link_libraries(mcs_4_emulator ${Boost_LIBRARIES})
+target_link_libraries(mcs_4_emulator ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})

@@ -12,6 +12,8 @@ class Ram {
 public:
     Ram();
 
+    virtual ~Ram();
+
     static const size_t RAM_SZ = 40;    // In bytes
 private:
     // In bits

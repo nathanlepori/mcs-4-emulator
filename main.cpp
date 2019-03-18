@@ -78,5 +78,8 @@ int main(int argc, const char *const argv[]) {
     t.join();
     std::cout << "CPU thread finished execution." << std::endl;
 
+    delete parser;
+    delete chipset;
+
     return 0;
 }

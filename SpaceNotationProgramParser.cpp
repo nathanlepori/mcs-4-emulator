@@ -11,6 +11,11 @@
 #include "Rom.h"
 
 SpaceNotationProgramParser::SpaceNotationProgramParser(const char *filename) {
+    if (strlen(filename) == 0) {
+        std::cerr << "No program file provided. ROM chip will be empty." << std::endl;
+        return;
+    }
+
     this->progfile.open(filename, std::ios::in);
 
     if (this->progfile.fail()) {

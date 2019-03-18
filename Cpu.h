@@ -71,6 +71,8 @@ public:
 
     Cpu(Rom *const rom, Ram *const ram);
 
+    virtual ~Cpu();
+
     // Accumulator and carry
 
     mcs4::uint4_t readAccumulator();

@@ -130,60 +130,60 @@ private:
 
     // Lookup tables
     const instr_p i[16] = {
-            nop,
-            jcn,
-            fim_src,
-            fin_jin,
-            jun,
-            jms,
-            inc,
-            isz,
-            add,
-            sub,
-            ld,
-            xch,
-            bbl,
-            ldm,
-            io,
-            acc
+            &InstructionSet::nop,
+            &InstructionSet::jcn,
+            &InstructionSet::fim_src,
+            &InstructionSet::fin_jin,
+            &InstructionSet::jun,
+            &InstructionSet::jms,
+            &InstructionSet::inc,
+            &InstructionSet::isz,
+            &InstructionSet::add,
+            &InstructionSet::sub,
+            &InstructionSet::ld,
+            &InstructionSet::xch,
+            &InstructionSet::bbl,
+            &InstructionSet::ldm,
+            &InstructionSet::io,
+            &InstructionSet::acc
     };
 
     // IO and RAM instructions
     const instr_p i_io[16] = {
-            wrm,
-            wmp,
-            wrr,
+            &InstructionSet::wrm,
+            &InstructionSet::wmp,
+            &InstructionSet::wrr,
             nullptr,        // This opcode is missing for some reason
-            wr0,
-            wr1,
-            wr2,
-            wr3,
-            sbm,
-            rdm,
-            rdr,
-            adm,
-            rd0,
-            rd1,
-            rd2,
-            rd3
+            &InstructionSet::wr0,
+            &InstructionSet::wr1,
+            &InstructionSet::wr2,
+            &InstructionSet::wr3,
+            &InstructionSet::sbm,
+            &InstructionSet::rdm,
+            &InstructionSet::rdr,
+            &InstructionSet::adm,
+            &InstructionSet::rd0,
+            &InstructionSet::rd1,
+            &InstructionSet::rd2,
+            &InstructionSet::rd3
     };
 
     // Accumulator group instructions
     const instr_p i_acc[14] = {
-            clb,
-            clc,
-            iac,
-            cmc,
-            cma,
-            ral,
-            rar,
-            tcc,
-            dac,
-            tcs,
-            stc,
-            daa,
-            kbp,
-            dcl
+            &InstructionSet::clb,
+            &InstructionSet::clc,
+            &InstructionSet::iac,
+            &InstructionSet::cmc,
+            &InstructionSet::cma,
+            &InstructionSet::ral,
+            &InstructionSet::rar,
+            &InstructionSet::tcc,
+            &InstructionSet::dac,
+            &InstructionSet::tcs,
+            &InstructionSet::stc,
+            &InstructionSet::daa,
+            &InstructionSet::kbp,
+            &InstructionSet::dcl
     };
 
 public:

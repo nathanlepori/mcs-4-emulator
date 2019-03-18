@@ -37,3 +37,9 @@ void Chipset::pauseCpu() {
 void Chipset::signalCpu() {
     this->cpu->signal();
 }
+
+Chipset::~Chipset() {
+    delete this->rom;
+    delete this->ram;
+    delete this->cpu;
+}

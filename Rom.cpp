@@ -65,3 +65,8 @@ void Rom::writePort(mcs4::uint12_t addr, mcs4::uint4_t value) {
 uint8_t Rom::addrToPort(uint16_t addr) {
     return static_cast<uint8_t>(floor((double) addr / Rom::ROM_CHIP_SZ));
 }
+
+Rom::~Rom() {
+    delete[] this->m;
+    delete[] this->io;
+}

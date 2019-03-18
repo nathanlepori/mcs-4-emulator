@@ -19,6 +19,8 @@ public:
 
     Rom(const uint8_t *prog, uint8_t numRoms);
 
+    virtual ~Rom();
+
     uint8_t read(mcs4::uint12_t addr);
 
     mcs4::uint4_t readPort(mcs4::uint12_t addr);

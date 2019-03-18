@@ -214,3 +214,7 @@ void Cpu::signal() {
 void Cpu::attachInspector(void (*inspector)(CpuInfo*)) {
     this->cycle_sig.connect(inspector);
 }
+
+Cpu::~Cpu() {
+    delete this->i_set;
+}

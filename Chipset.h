@@ -21,6 +21,8 @@ public:
 
     Chipset(const uint8_t prog[], uint8_t numRoms);
 
+    virtual ~Chipset();
+
     std::thread powerOn();
 
     void pauseCpu();

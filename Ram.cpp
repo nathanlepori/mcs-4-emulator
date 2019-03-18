@@ -6,3 +6,7 @@
 #include "Ram.h"
 
 Ram::Ram() : m{0} {}
+
+Ram::~Ram() {
+    // TODO
+}
