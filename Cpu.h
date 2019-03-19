@@ -50,7 +50,7 @@ private:
     bool is_paused;
 
     // Signal is sent to the outside world (i.e. debugger) when a CPU cycle starts
-    boost::signals2::signal<void(CpuInfo*)> cycle_sig;
+    boost::signals2::signal<void(CpuInfo *)> cycle_sig;
 
     uint8_t readInstruction();
 
@@ -110,7 +110,7 @@ public:
 
     void signal();
 
-    void attachInspector(void (*)(CpuInfo*));
+    void attachInspector(std::function<void(const CpuInfo *)> &);
 };
 
 

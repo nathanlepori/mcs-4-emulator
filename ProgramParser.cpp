@@ -3,3 +3,5 @@
 //
 
 #include "ProgramParser.h"
+
+ProgramParser::~ProgramParser() = default;

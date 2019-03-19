@@ -11,16 +11,16 @@ Chipset::Chipset(const uint8_t *prog) :
         cpu(new Cpu(rom, ram)) {
 }
 
-auto insp = [](CpuInfo *info) -> void {
-    std::cout << "From inspector: code_ptr=0x" << std::hex << info->code_ptr << std::endl;
-};
-
 Chipset::Chipset(const uint8_t *prog, const uint8_t numRoms) :
         ram(new Ram()),
         rom(new Rom(prog, numRoms)),
-        cpu(new Cpu(rom, ram))  {
-    /*---------- Debug ----------*/
-    this->cpu->attachInspector(insp);
+        cpu(new Cpu(rom, ram)) {
+}
+
+Chipset::~Chipset() {
+    delete this->rom;
+    delete this->ram;
+    delete this->cpu;
 }
 
 std::thread Chipset::powerOn() {
@@ -38,8 +38,10 @@ void Chipset::signalCpu() {
     this->cpu->signal();
 }
 
-Chipset::~Chipset() {
-    delete this->rom;
-    delete this->ram;
-    delete this->cpu;
+void Chipset::attachDebugger(Debugger *const debugger) {
+    debugger->setChipset(this);
+
+    // Wrap in a lambda to pass member function as argument
+    std::function<void(const CpuInfo *)> insp = [&debugger](const CpuInfo *info) { debugger->cpuInspector(info); };
+    this->cpu->attachInspector(insp);
 }

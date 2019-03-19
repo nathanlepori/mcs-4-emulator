@@ -10,8 +10,8 @@
 #include "mcs4_stdint.h"
 #include "Rom.h"
 
-SpaceNotationProgramParser::SpaceNotationProgramParser(const char *filename) {
-    if (strlen(filename) == 0) {
+SpaceNotationProgramParser::SpaceNotationProgramParser(std::string filename) {
+    if (filename.length() == 0) {
         std::cerr << "No program file provided. ROM chip will be empty." << std::endl;
         return;
     }

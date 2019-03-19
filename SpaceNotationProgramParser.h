@@ -10,12 +10,10 @@
 
 class SpaceNotationProgramParser: public ProgramParser {
 public:
-    explicit SpaceNotationProgramParser(const char* filename);
+    explicit SpaceNotationProgramParser(std::string filename);
 
     void parse(uint8_t *prog) override;
-
 private:
-    static const size_t progSize = 4000;
     std::ifstream progfile;
 };
 

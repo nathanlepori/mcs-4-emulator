@@ -24,6 +24,10 @@ Cpu::Cpu(Rom *const rom, Ram *const ram) :
         i_set(new InstructionSet(this)),
         is_paused(false) {}
 
+Cpu::~Cpu() {
+    delete this->i_set;
+}
+
 uint8_t Cpu::readRegister(const uint8_t index) {
     // Registers are only 4 bit wide
     if (index % 2 == 0) {
@@ -186,7 +190,6 @@ mcs4::uint12_t Cpu::popStack() {
 }
 
 void Cpu::run() {
-    std::unique_lock<std::mutex> lock(this->mutex);
     while (this->code_ptr < this->rom->romSz) {
         // TODO: Move to function
         CpuInfo info;
@@ -194,14 +197,18 @@ void Cpu::run() {
         this->cycle_sig(&info);
 
         // Handle pause/signal feature
-        while(this->is_paused) {
-            this->pause_cond.wait(lock);
-        }
+        // TODO: Test if lock scope is right
+        std::unique_lock<std::mutex> lock(this->mutex);
+        this->pause_cond.wait(lock,
+                              [this]() { return !this->is_paused; });
+        // Predicate replaces while loop to avoid spurious wake-ups.
+
         this->runCycle();
     }
 }
 
 void Cpu::pause() {
+    std::unique_lock<std::mutex> lock(this->mutex);
     this->is_paused = true;
 }
 
@@ -211,10 +218,6 @@ void Cpu::signal() {
     this->pause_cond.notify_one();
 }
 
-void Cpu::attachInspector(void (*inspector)(CpuInfo*)) {
+void Cpu::attachInspector(std::function<void(const CpuInfo *)> &inspector) {
     this->cycle_sig.connect(inspector);
-}
-
-Cpu::~Cpu() {
-    delete this->i_set;
 }

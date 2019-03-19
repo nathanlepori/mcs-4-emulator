@@ -10,6 +10,9 @@
 #include "Ram.h"
 #include "Cpu.h"
 #include "Rom.h"
+#include "Debugger.h"
+
+class Debugger;
 
 class Chipset {
 private:
@@ -27,6 +30,8 @@ public:
 
     void pauseCpu();
     void signalCpu();
+
+    void attachDebugger(Debugger *const debugger);
 };
 
 

@@ -10,6 +10,8 @@
 class ProgramParser {
 public:
     virtual void parse(uint8_t *prog) = 0;
+
+    virtual ~ProgramParser();
 };
 
 
