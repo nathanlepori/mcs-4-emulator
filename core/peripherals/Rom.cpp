@@ -16,11 +16,11 @@ Rom::Rom(const uint8_t *prog, const uint8_t numRoms) :
         std::cerr << "ROM chips requested exceed the maximum number supported. Errors may occur." << std::endl;
     }
 
-    const size_t rom_sz = Rom::ROM_CHIP_SZ * numRoms;
+//    const size_t rom_sz = Rom::ROM_CHIP_SZ * numRoms;
 
-    this->m = new uint8_t[rom_sz];
+    this->m = new uint8_t[this->romSz];
 
-    memcpy(this->m, prog, rom_sz);
+    std::memcpy(this->m, prog, this->romSz);
 
     auto num_io = static_cast<size_t>(ceil((double) numRoms / 2));
     this->io = new uint8_t[num_io];
@@ -31,34 +31,30 @@ uint8_t Rom::read(uint16_t addr) {
     return this->m[addr];
 }
 
-mcs4::uint4_t Rom::readPort(uint16_t addr) {
-    uint8_t index = this->addrToPort(addr);
+mcs4::uint4_t Rom::readPort(mcs4::uint4_t bank) {
+    // Keep only the lower 4 bits
+    bank = l4b(bank);
 
-    if (index % 2 == 0) {
-        return l4b(this->io[index / 2]);
+    if (bank % 2 == 0) {
+        return l4b(this->io[bank / 2]);
     } else {
-        return h4b(this->io[index / 2]);
+        return h4b(this->io[bank / 2]);
     }
 }
 
-void Rom::writePort(mcs4::uint12_t addr, mcs4::uint4_t value) {
-    uint8_t index = this->addrToPort(addr);
-
+void Rom::writePort(mcs4::uint4_t bank, mcs4::uint4_t value) {
     // Keep only the lower 4 bits
+    bank = l4b(bank);
     value = l4b(value);
-    if (index % 2 == 0) {
+    if (bank % 2 == 0) {
         // Clear and overwrite low 4 bits
-        this->io[index / 2] &= 0xf0;
-        this->io[index / 2] |= value;
+        this->io[bank / 2] &= 0xf0;
+        this->io[bank / 2] |= value;
     } else {
         // Clear and overwrite high 4 bits
-        this->io[index / 2] &= 0xf;
-        this->io[index / 2] |= value << 4;
+        this->io[bank / 2] &= 0xf;
+        this->io[bank / 2] |= value << 4;
     }
-}
-
-uint8_t Rom::addrToPort(uint16_t addr) {
-    return static_cast<uint8_t>(floor((double) addr / Rom::ROM_CHIP_SZ));
 }
 
 Rom::~Rom() {

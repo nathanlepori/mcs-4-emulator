@@ -16,7 +16,7 @@
 #include "Ram.h"
 #include "../InstructionSet.h"
 #include "../../mcs4_stdint.h"
-#include "../../CpuInfo.h"
+#include "../../SysInfo.h"
 
 class InstructionSet;
 
@@ -46,7 +46,7 @@ private:
     InstructionSet *const i_set;
 
     // Signal is sent to the outside world (i.e. debugger) when a CPU cycle starts
-    boost::signals2::signal<void(CpuInfo *)> cycle_sig;
+    boost::signals2::signal<void(SysInfo *)> cycle_sig;
 
     uint8_t readInstruction();
 
@@ -60,7 +60,7 @@ private:
 
     void runCycle();
 
-    CpuInfo getCurrentCpuInfo();
+    void getCurrentSysInfo(SysInfo *);
 
 public:
     // Other peripherals
@@ -104,7 +104,7 @@ public:
 
     void run();
 
-    void attachInspector(std::function<void(const CpuInfo *)> &);
+    void attachInspector(std::function<void(const SysInfo *)> &);
 };
 
 

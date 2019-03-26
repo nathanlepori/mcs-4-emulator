@@ -31,6 +31,6 @@ void Chipset::attachDebugger(Debugger *const debugger) {
     debugger->setChipset(this);
 
     // Wrap in a lambda to pass member function as argument
-    std::function<void(const CpuInfo *)> insp = [debugger](const CpuInfo *info) { debugger->cpuInspector(info); };
+    std::function<void(const SysInfo *)> insp = [debugger](const SysInfo *info) { debugger->cpuInspector(info); };
     this->cpu->attachInspector(insp);
 }

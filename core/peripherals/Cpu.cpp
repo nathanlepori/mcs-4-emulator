@@ -10,7 +10,7 @@
 #include "../../util.h"
 #include "Rom.h"
 #include "Ram.h"
-#include "../../CpuInfo.h"
+#include "../../SysInfo.h"
 
 Cpu::Cpu(Rom *const rom, Ram *const ram) :
         rom(rom),
@@ -190,7 +190,8 @@ mcs4::uint12_t Cpu::popStack() {
 
 void Cpu::run() {
     while (this->code_ptr < this->rom->romSz) {
-        CpuInfo info = this->getCurrentCpuInfo();
+        SysInfo info;
+        this->getCurrentSysInfo(&info);
 
         // Call inspector callback method such as debugger, ...
         this->cycle_sig(&info);
@@ -199,51 +200,37 @@ void Cpu::run() {
     }
 }
 
-void Cpu::attachInspector(std::function<void(const CpuInfo *)> &inspector) {
+void Cpu::attachInspector(std::function<void(const SysInfo *)> &inspector) {
     this->cycle_sig.connect(inspector);
 }
 
-CpuInfo Cpu::getCurrentCpuInfo() {
+void Cpu::getCurrentSysInfo(SysInfo *info) {
+    info->acc = this->readAccumulator();
+    info->cy = this->readCarry();
+
+    for (mcs4::uint4_t i = 0; i < Cpu::REG_NUM; ++i) {
+        info->r[i] = readRegister(i);
+    }
+
+
+    info->data_ptr = this->data_ptr;
+    info->code_ptr = this->code_ptr;
+
+    std::copy(this->stack, this->stack + Cpu::STACK_SZ, info->stack);
+
+    info->stack_ptr = this->stack_ptr;
+
     // Prepare raw instruction info
     uint16_t current_instr = this->readInstruction();
     if (this->i_set->is2WordInstruction((uint8_t) current_instr)) {
         current_instr = (this->readSecondInstruction() << 8) | current_instr;
     }
+    info->raw_instr = current_instr;
 
-    // As long as the struct is relatively short, it's ok to return it, instead of a reference (no need to free it afterwards)
-    // TODO: But is it?
-    return {
-            this->readAccumulator(),
-            this->readCarry(),
-            {
-                    readRegister(0),
-                    readRegister(1),
-                    readRegister(2),
-                    readRegister(3),
-                    readRegister(4),
-                    readRegister(5),
-                    readRegister(6),
-                    readRegister(7),
-                    readRegister(8),
-                    readRegister(9),
-                    readRegister(10),
-                    readRegister(11),
-                    readRegister(12),
-                    readRegister(13),
-                    readRegister(14),
-                    readRegister(15),
-            },
-
-            this->data_ptr,
-            this->code_ptr,
-
-            {
-                    this->stack[0],
-                    this->stack[1],
-                    this->stack[2],
-            },
-            this->stack_ptr,
-            current_instr
-    };
-    // TODO: This is ugly
+    // Prepare ROM I/O info
+    mcs4::uint4_t rom_io[ROM_MAX_IO] = {0};
+    for (mcs4::uint4_t b = 0; b < this->rom->numRoms; ++b) {
+        rom_io[b] = this->rom->readPort(b);
+    }
+    std::copy(rom_io, rom_io + ROM_MAX_IO, info->rom_io);
 }
