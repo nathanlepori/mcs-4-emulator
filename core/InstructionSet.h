@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 
-#include "Cpu.h"
-#include "mcs4_stdint.h"
+#include "peripherals/Cpu.h"
+#include "../mcs4_stdint.h"
 
 class Cpu;
+
 class InstructionSet;
 
 /**

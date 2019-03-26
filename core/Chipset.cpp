@@ -23,25 +23,14 @@ Chipset::~Chipset() {
     delete this->cpu;
 }
 
-std::thread Chipset::powerOn() {
-    // Start CPU thread and return pointer to thread
-    std::thread cpu_thread(&Cpu::run, this->cpu);
-
-    return cpu_thread;
-}
-
-void Chipset::pauseCpu() {
-    this->cpu->pause();
-}
-
-void Chipset::signalCpu() {
-    this->cpu->signal();
+void Chipset::powerOn() {
+    this->cpu->run();
 }
 
 void Chipset::attachDebugger(Debugger *const debugger) {
     debugger->setChipset(this);
 
     // Wrap in a lambda to pass member function as argument
-    std::function<void(const CpuInfo *)> insp = [&debugger](const CpuInfo *info) { debugger->cpuInspector(info); };
+    std::function<void(const CpuInfo *)> insp = [debugger](const CpuInfo *info) { debugger->cpuInspector(info); };
     this->cpu->attachInspector(insp);
 }

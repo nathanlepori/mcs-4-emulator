@@ -7,10 +7,10 @@
 #include <iostream>
 
 #include "Cpu.h"
-#include "util.h"
+#include "../../util.h"
 #include "Rom.h"
 #include "Ram.h"
-#include "CpuInfo.h"
+#include "../../CpuInfo.h"
 
 Cpu::Cpu(Rom *const rom, Ram *const ram) :
         rom(rom),
@@ -21,8 +21,7 @@ Cpu::Cpu(Rom *const rom, Ram *const ram) :
         code_ptr(0),
         stack{0},
         stack_ptr(0),
-        i_set(new InstructionSet(this)),
-        is_paused(false) {}
+        i_set(new InstructionSet(this)) {}
 
 Cpu::~Cpu() {
     delete this->i_set;
@@ -191,33 +190,60 @@ mcs4::uint12_t Cpu::popStack() {
 
 void Cpu::run() {
     while (this->code_ptr < this->rom->romSz) {
-        // TODO: Move to function
-        CpuInfo info;
-        info.code_ptr = this->readCodePtr();
-        this->cycle_sig(&info);
+        CpuInfo info = this->getCurrentCpuInfo();
 
-        // Handle pause/signal feature
-        // TODO: Test if lock scope is right
-        std::unique_lock<std::mutex> lock(this->mutex);
-        this->pause_cond.wait(lock,
-                              [this]() { return !this->is_paused; });
-        // Predicate replaces while loop to avoid spurious wake-ups.
+        // Call inspector callback method such as debugger, ...
+        this->cycle_sig(&info);
 
         this->runCycle();
     }
 }
 
-void Cpu::pause() {
-    std::unique_lock<std::mutex> lock(this->mutex);
-    this->is_paused = true;
-}
-
-void Cpu::signal() {
-    std::unique_lock<std::mutex> lock(this->mutex);
-    this->is_paused = false;
-    this->pause_cond.notify_one();
-}
-
 void Cpu::attachInspector(std::function<void(const CpuInfo *)> &inspector) {
     this->cycle_sig.connect(inspector);
+}
+
+CpuInfo Cpu::getCurrentCpuInfo() {
+    // Prepare raw instruction info
+    uint16_t current_instr = this->readInstruction();
+    if (this->i_set->is2WordInstruction((uint8_t) current_instr)) {
+        current_instr = (this->readSecondInstruction() << 8) | current_instr;
+    }
+
+    // As long as the struct is relatively short, it's ok to return it, instead of a reference (no need to free it afterwards)
+    // TODO: But is it?
+    return {
+            this->readAccumulator(),
+            this->readCarry(),
+            {
+                    readRegister(0),
+                    readRegister(1),
+                    readRegister(2),
+                    readRegister(3),
+                    readRegister(4),
+                    readRegister(5),
+                    readRegister(6),
+                    readRegister(7),
+                    readRegister(8),
+                    readRegister(9),
+                    readRegister(10),
+                    readRegister(11),
+                    readRegister(12),
+                    readRegister(13),
+                    readRegister(14),
+                    readRegister(15),
+            },
+
+            this->data_ptr,
+            this->code_ptr,
+
+            {
+                    this->stack[0],
+                    this->stack[1],
+                    this->stack[2],
+            },
+            this->stack_ptr,
+            current_instr
+    };
+    // TODO: This is ugly
 }

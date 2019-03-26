@@ -7,7 +7,7 @@
 
 #include <cstddef>
 #include <stdint.h>
-#include "mcs4_stdint.h"
+#include "../../mcs4_stdint.h"
 
 class Rom {
 public:

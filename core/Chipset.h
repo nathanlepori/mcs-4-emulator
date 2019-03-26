@@ -7,10 +7,10 @@
 
 #include <thread>
 
-#include "Ram.h"
-#include "Cpu.h"
-#include "Rom.h"
-#include "Debugger.h"
+#include "peripherals/Ram.h"
+#include "peripherals/Cpu.h"
+#include "peripherals/Rom.h"
+#include "../Debugger.h"
 
 class Debugger;
 
@@ -26,10 +26,7 @@ public:
 
     virtual ~Chipset();
 
-    std::thread powerOn();
-
-    void pauseCpu();
-    void signalCpu();
+    void powerOn();
 
     void attachDebugger(Debugger *const debugger);
 };

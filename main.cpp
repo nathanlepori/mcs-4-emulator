@@ -3,7 +3,7 @@
 #include <boost/algorithm/hex.hpp>
 
 #include "config.h"
-#include "Chipset.h"
+#include "core/Chipset.h"
 #include "SpaceNotationProgramParser.h"
 
 namespace po = boost::program_options;
@@ -55,35 +55,23 @@ void program_options(int argc, const char *const argv[]) {
 int main(int argc, const char *const argv[]) {
     program_options(argc, argv);
 
+    // Parse program from file
     ProgramParser *parser = new SpaceNotationProgramParser(progfile);
-
     uint8_t prog[Rom::MAX_ROM_SZ];
     parser->parse(prog);
+    delete parser;
+
 
     auto *chipset = new Chipset(prog, (uint8_t) num_roms);
     auto *debugger = new Debugger();
+
     chipset->attachDebugger(debugger);
 
-    auto t = chipset->powerOn();
+    // Start chipset
+    chipset->powerOn();
 
-    std::cout << "CPU thread started." << std::endl;
-
-    while (true) {
-        std::string cmd;
-        std::cin >> cmd;
-
-        if (cmd == "c") {
-            chipset->signalCpu();
-        } else if (cmd == "e") {
-            break;
-        }
-    }
-
-    t.join();
-    std::cout << "CPU thread finished execution." << std::endl;
-
-    delete parser;
     delete chipset;
+    delete debugger;
 
     return 0;
 }

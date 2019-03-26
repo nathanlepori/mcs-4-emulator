@@ -3,9 +3,11 @@
 //
 
 #include <iostream>
+#include <boost/algorithm/string.hpp>
+
 #include "InstructionSet.h"
-#include "Cpu.h"
-#include "util.h"
+#include "peripherals/Cpu.h"
+#include "../util.h"
 
 InstructionSet::InstructionSet(Cpu *cpu) : cpu(cpu) {}
 
@@ -165,7 +167,6 @@ void InstructionSet::wmp(mcs4::uint12_t) {
 }
 
 void InstructionSet::wrr(mcs4::uint12_t) {
-    // TODO: Same as read.
     this->cpu->rom->writePort(this->cpu->readDataPtr(), this->cpu->readAccumulator());
 }
 
@@ -360,5 +361,5 @@ bool InstructionSet::isJumpInstruction(uint8_t instruction) {
 }
 
 void InstructionSet::notImplErr(const char *opcode) {
-    std::cerr << opcode << " opcode not implemented" << std::endl;
+    std::cerr << boost::to_upper_copy<std::string>(opcode) << " opcode not implemented" << std::endl;
 }

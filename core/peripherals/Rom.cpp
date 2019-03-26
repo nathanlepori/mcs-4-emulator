@@ -7,7 +7,7 @@
 #include <cmath>
 #include <iostream>
 #include "Rom.h"
-#include "util.h"
+#include "../../util.h"
 
 Rom::Rom(const uint8_t *prog, const uint8_t numRoms) :
         numRoms(numRoms),
@@ -25,11 +25,6 @@ Rom::Rom(const uint8_t *prog, const uint8_t numRoms) :
     auto num_io = static_cast<size_t>(ceil((double) numRoms / 2));
     this->io = new uint8_t[num_io];
     memset(this->io, 0, num_io);
-
-    /*---------- Debug ----------*/
-    this->writePort(0, 0xa);
-    this->writePort(Rom::ROM_CHIP_SZ, 0x6);
-    // Result 0x2
 }
 
 uint8_t Rom::read(uint16_t addr) {
@@ -52,13 +47,13 @@ void Rom::writePort(mcs4::uint12_t addr, mcs4::uint4_t value) {
     // Keep only the lower 4 bits
     value = l4b(value);
     if (index % 2 == 0) {
-        // Clear and overwrite high 4 bits
-        this->io[index / 2] &= 0xf;
-        this->io[index / 2] |= value << 4;
-    } else {
         // Clear and overwrite low 4 bits
         this->io[index / 2] &= 0xf0;
         this->io[index / 2] |= value;
+    } else {
+        // Clear and overwrite high 4 bits
+        this->io[index / 2] &= 0xf;
+        this->io[index / 2] |= value << 4;
     }
 }
 

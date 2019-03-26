@@ -8,7 +8,7 @@
 #include <sstream>
 #include "SpaceNotationProgramParser.h"
 #include "mcs4_stdint.h"
-#include "Rom.h"
+#include "core/peripherals/Rom.h"
 
 SpaceNotationProgramParser::SpaceNotationProgramParser(std::string filename) {
     if (filename.length() == 0) {

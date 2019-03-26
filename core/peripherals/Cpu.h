@@ -14,9 +14,9 @@
 
 #include "Rom.h"
 #include "Ram.h"
-#include "InstructionSet.h"
-#include "mcs4_stdint.h"
-#include "CpuInfo.h"
+#include "../InstructionSet.h"
+#include "../../mcs4_stdint.h"
+#include "../../CpuInfo.h"
 
 class InstructionSet;
 
@@ -33,6 +33,7 @@ private:
     static const size_t STACK_SZ = 3;
     static const unsigned int CLOCK_SPEED = 750000;
 
+    // These two variables are grouped together to save memory
     mcs4::uint5_t acc_cy;                  // Accumulator + carry
     uint8_t r[REG_NUM / 2];            // Registers: 16 x 4bit
 
@@ -43,11 +44,6 @@ private:
     uint8_t stack_ptr;
 
     InstructionSet *const i_set;
-
-    // Debugger/signaling related data
-    std::condition_variable pause_cond;
-    std::mutex mutex;
-    bool is_paused;
 
     // Signal is sent to the outside world (i.e. debugger) when a CPU cycle starts
     boost::signals2::signal<void(CpuInfo *)> cycle_sig;
@@ -63,6 +59,8 @@ private:
     void waitClockTime(std::chrono::duration<double> exec_time);
 
     void runCycle();
+
+    CpuInfo getCurrentCpuInfo();
 
 public:
     // Other peripherals
@@ -105,10 +103,6 @@ public:
     mcs4::uint12_t popStack();
 
     void run();
-
-    void pause();
-
-    void signal();
 
     void attachInspector(std::function<void(const CpuInfo *)> &);
 };
