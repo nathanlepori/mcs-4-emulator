@@ -159,7 +159,7 @@ void InstructionSet::ldm(mcs4::uint12_t d) {
 }
 
 void InstructionSet::wrm(mcs4::uint12_t) {
-    notImplErr(__FUNCTION__);
+    this->cpu->ram->write(this->cpu->readDataPtr(), this->cpu->readAccumulator());
 }
 
 void InstructionSet::wmp(mcs4::uint12_t) {
@@ -191,7 +191,7 @@ void InstructionSet::sbm(mcs4::uint12_t) {
 }
 
 void InstructionSet::rdm(mcs4::uint12_t) {
-    notImplErr(__FUNCTION__);
+    this->cpu->writeAccumulator(this->cpu->ram->read(this->cpu->readDataPtr()));
 }
 
 void InstructionSet::rdr(mcs4::uint12_t) {

@@ -39,6 +39,7 @@ uint8_t Cpu::readRegister(const uint8_t index) {
 void Cpu::writeRegister(const uint8_t index, uint8_t value) {
     // Keep only the lower 4 bits
     value = l4b(value);
+
     if (index % 2 == 0) {
         // Clear and overwrite high 4 bits
         this->r[index / 2] &= 0xf;

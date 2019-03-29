@@ -6,14 +6,14 @@
 #define MCS_4_EMULATOR_ROM_H
 
 #include <cstddef>
-#include <stdint.h>
+#include <cstdint>
 #include "../../mcs4_stdint.h"
 
 class Rom {
 public:
-    static const size_t ROM_CHIP_SZ = 256;
+    static const size_t CHIP_SZ = 256;  // In bytes
     static const size_t MAX_CHIPS = 16;
-    static const size_t MAX_ROM_SZ = ROM_CHIP_SZ * MAX_CHIPS;    // In bytes
+    static const size_t MAX_ROM_SZ = CHIP_SZ * MAX_CHIPS;    // In bytes
 
     const size_t romSz;
     const uint8_t numRoms;

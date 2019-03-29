@@ -11,12 +11,10 @@
 
 Rom::Rom(const uint8_t *prog, const uint8_t numRoms) :
         numRoms(numRoms),
-        romSz(numRoms * Rom::ROM_CHIP_SZ) {
+        romSz(numRoms * Rom::CHIP_SZ) {
     if (numRoms > Rom::MAX_CHIPS) {
         std::cerr << "ROM chips requested exceed the maximum number supported. Errors may occur." << std::endl;
     }
-
-//    const size_t rom_sz = Rom::ROM_CHIP_SZ * numRoms;
 
     this->m = new uint8_t[this->romSz];
 
@@ -24,7 +22,7 @@ Rom::Rom(const uint8_t *prog, const uint8_t numRoms) :
 
     auto num_io = static_cast<size_t>(ceil((double) numRoms / 2));
     this->io = new uint8_t[num_io];
-    memset(this->io, 0, num_io);
+    std::memset(this->io, 0, num_io);
 }
 
 uint8_t Rom::read(uint16_t addr) {

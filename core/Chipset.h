@@ -22,13 +22,13 @@ private:
 public:
     explicit Chipset(const uint8_t prog[]);
 
-    Chipset(const uint8_t prog[], uint8_t numRoms);
+    Chipset(const uint8_t prog[], uint8_t numRoms, uint8_t numRams);
 
     virtual ~Chipset();
 
     void powerOn();
 
-    void attachDebugger(Debugger *const debugger);
+    void attachDebugger(Debugger *debugger);
 };
 
 

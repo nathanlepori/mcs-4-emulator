@@ -6,13 +6,13 @@
 #include "Chipset.h"
 
 Chipset::Chipset(const uint8_t *prog) :
-        ram(new Ram()),
+        ram(new Ram(16)),
         rom(new Rom(prog, 16)),
         cpu(new Cpu(rom, ram)) {
 }
 
-Chipset::Chipset(const uint8_t *prog, const uint8_t numRoms) :
-        ram(new Ram()),
+Chipset::Chipset(const uint8_t *prog, const uint8_t numRoms, const uint8_t numRams) :
+        ram(new Ram(numRams)),
         rom(new Rom(prog, numRoms)),
         cpu(new Cpu(rom, ram)) {
 }

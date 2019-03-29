@@ -6,18 +6,28 @@
 #define MCS_4_EMULATOR_RAM_H
 
 #include <cstddef>
-#include <stdint.h>
+#include <cstdint>
+#include "../../mcs4_stdint.h"
 
 class Ram {
 public:
-    Ram();
+    explicit Ram(uint8_t numRams);
 
     virtual ~Ram();
 
-    static const size_t RAM_SZ = 40;    // In bytes
+    mcs4::uint4_t read(uint8_t addr);
+    void write(uint8_t addr, mcs4::uint4_t value);
 private:
-    // In bits
-    uint8_t const m[RAM_SZ];    // Ram content
+    static const size_t CHIP_SZ = 40;    // In bytes
+    static const size_t MAX_CHIPS = 16;
+    static const size_t MAX_RAM_SZ = CHIP_SZ * MAX_CHIPS;    // In bytes
+
+    const size_t ramSz;
+    const uint8_t numRams;
+
+    uint8_t *m;    // Ram content
+    uint8_t *io;   // IO ports
+    // TODO: Implement status chars
 };
 
 

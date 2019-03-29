@@ -9,6 +9,7 @@
 namespace po = boost::program_options;
 
 unsigned short num_roms = 16;
+unsigned short num_rams = 16;
 bool debug = false;
 std::string progfile;
 
@@ -19,7 +20,9 @@ void program_options(int argc, const char *const argv[]) {
             ("version", "Show version of this program")
             ("num-roms", po::value<unsigned short>()->default_value(num_roms),
              "Number of ROM chips installed on the board")
-            ("debug", "Attach debugger")
+            ("num-rams", po::value<unsigned short>()->default_value(num_rams),
+             "Number of RAM chips installed on the board")
+             ("debug", "Attach debugger")
             ("prog-file", po::value<std::string>(),
              "Program to be loaded into ROM and run by the processor");
 
@@ -49,6 +52,10 @@ void program_options(int argc, const char *const argv[]) {
         num_roms = vm["num-roms"].as<unsigned short>();
     }
 
+    if (vm.count("num-rams")) {
+        num_rams = vm["num-rams"].as<unsigned short>();
+    }
+
     if (vm.count("debug")) {
         debug = true;
     }
@@ -68,7 +75,7 @@ int main(int argc, const char *const argv[]) {
     delete parser;
 
 
-    auto *chipset = new Chipset(prog, (uint8_t) num_roms);
+    auto *chipset = new Chipset(prog, (uint8_t) num_roms, (uint8_t) num_rams);
     auto *debugger = new Debugger();
 
     if (debug) {
