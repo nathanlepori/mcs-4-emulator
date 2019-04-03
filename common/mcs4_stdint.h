@@ -7,7 +7,7 @@
 #ifndef MCS_4_EMULATOR_STDINT_H
 #define MCS_4_EMULATOR_STDINT_H
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace mcs4 {
     typedef uint8_t uint1_t;

@@ -7,7 +7,7 @@
 #include <cmath>
 #include <iostream>
 #include "Rom.h"
-#include "../../util.h"
+#include "../../common/util.h"
 
 Rom::Rom(const uint8_t *prog, const uint8_t numRoms) :
         numRoms(numRoms),

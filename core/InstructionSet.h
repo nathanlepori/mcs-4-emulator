@@ -5,10 +5,10 @@
 #ifndef MCS_4_EMULATOR_INSTRUCTIONSET_H
 #define MCS_4_EMULATOR_INSTRUCTIONSET_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "peripherals/Cpu.h"
-#include "../mcs4_stdint.h"
+#include "../common/mcs4_stdint.h"
 
 class Cpu;
 
@@ -26,6 +26,14 @@ private:
     Cpu *const cpu;
 
     void notImplErr(const char *opcode);
+
+    /**
+     * Takes the 8-bit address (AM, AL) provided and returns that address on the same page. If the program counter is
+     * located at the last instruction of the current page, the CPU jumps at the address but on the next page.
+     *
+     * @param addr
+     */
+    mcs4::uint12_t getAddresssOnPage(uint8_t addr);
 
     // Instructions
     // 2 word instructions take a 12 bit modifier. In order to make it fit it's necessary to have at least 16 bits
@@ -188,7 +196,7 @@ private:
     };
 
 public:
-    explicit InstructionSet(Cpu *const cpu);
+    explicit InstructionSet(Cpu *cpu);
 
     /**
      * Fetches an opcode high 4 bits of an instruction

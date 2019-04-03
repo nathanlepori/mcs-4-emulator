@@ -7,7 +7,7 @@
 
 #include <cstddef>
 #include <cstdint>
-#include "../../mcs4_stdint.h"
+#include "../../common/mcs4_stdint.h"
 
 class Ram {
 public:

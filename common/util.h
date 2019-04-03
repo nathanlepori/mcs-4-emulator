@@ -9,6 +9,8 @@
 #include <cstdint>
 #include "mcs4_stdint.h"
 
+/* ---------- Masking functions ---------- */
+
 uint8_t l8b(uint16_t v);
 
 /**
@@ -65,5 +67,9 @@ mcs4::uint1_t l1b(uint8_t v);
 mcs4::uint1_t h1b(uint8_t v);
 
 mcs4::uint1_t mask1bit(uint8_t v, uint8_t pos);
+
+/* ---------- Other utility functions ---------- */
+
+
 
 #endif //MCS_4_EMULATOR_UTIL_H

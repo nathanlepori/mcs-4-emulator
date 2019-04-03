@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cmath>
 #include "Ram.h"
-#include "../../util.h"
+#include "../../common/util.h"
 
 Ram::Ram(uint8_t numRams) :
         numRams(numRams),

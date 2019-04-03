@@ -7,7 +7,7 @@
 #include <iostream>
 
 #include "Cpu.h"
-#include "../../util.h"
+#include "../../common/util.h"
 #include "Rom.h"
 #include "Ram.h"
 #include "../../SysInfo.h"

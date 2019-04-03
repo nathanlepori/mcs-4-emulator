@@ -7,7 +7,7 @@
 
 #include "InstructionSet.h"
 #include "peripherals/Cpu.h"
-#include "../util.h"
+#include "../common/util.h"
 
 InstructionSet::InstructionSet(Cpu *cpu) : cpu(cpu) {}
 
@@ -45,7 +45,7 @@ void InstructionSet::jcn(mcs4::uint12_t m) {
 
     if (jump) {
         // If condition is true, jump on the same page at this address
-        mcs4::uint12_t addr = h4b(this->cpu->readCodePtr()) << 8 | l8b(m);
+        mcs4::uint12_t addr = this->getAddresssOnPage(l8b(m));
 
         this->cpu->writeCodePtr(addr);
     } else {
@@ -73,8 +73,21 @@ void InstructionSet::src(mcs4::uint12_t m) {
     this->cpu->writeDataPtr(v);
 }
 
-void InstructionSet::fin(mcs4::uint12_t) {
-    notImplErr(__FUNCTION__);
+void InstructionSet::fin(mcs4::uint12_t r) {
+    mcs4::uint4_t r0 = l4b(r);
+    mcs4::uint4_t r1 = r0 + (mcs4::uint4_t) 1;
+
+    mcs4::uint4_t am = this->cpu->readRegister(r0);     // Middle and low bits from registers
+    mcs4::uint4_t al = this->cpu->readRegister(r1);
+
+    mcs4::uint12_t addr = this->getAddresssOnPage((am << 4) | al);
+
+    uint8_t d = this->cpu->rom->read(addr);
+
+    this->cpu->writeRegister(r0, h4b(d));
+    this->cpu->writeRegister(r1, l4b(d));
+
+    // TODO: This instruction needs 2 CPU cycles despite being a 1-word instruction
 }
 
 void InstructionSet::jin(mcs4::uint12_t m) {
@@ -84,7 +97,7 @@ void InstructionSet::jin(mcs4::uint12_t m) {
     mcs4::uint4_t am = this->cpu->readRegister(r0);     // Middle and low bits from registers
     mcs4::uint4_t al = this->cpu->readRegister(r1);
 
-    mcs4::uint12_t addr = (this->cpu->readCodePtr() << 8) | (am << 4) | al;
+    mcs4::uint12_t addr =  this->getAddresssOnPage((am << 4) | al);
     this->cpu->writeCodePtr(addr);
 }
 
@@ -114,8 +127,17 @@ void InstructionSet::inc(mcs4::uint12_t m) {
     this->cpu->writeRegister(r, v);
 }
 
-void InstructionSet::isz(mcs4::uint12_t) {
-    notImplErr(__FUNCTION__);
+void InstructionSet::isz(mcs4::uint12_t m) {
+    mcs4::uint4_t r = h4b(m);
+    uint8_t addr = l8b(m);
+
+    mcs4::uint4_t res = l4b((mcs4::uint4_t) (this->cpu->readRegister(r) + 1));
+    this->cpu->writeRegister(r, res);
+
+    if (res != 0) {
+        // Jump to address on the same page
+        this->cpu->writeCodePtr(getAddresssOnPage(addr));
+    }
 }
 
 void InstructionSet::add(mcs4::uint12_t r) {
@@ -234,11 +256,11 @@ void InstructionSet::iac(mcs4::uint12_t) {
 }
 
 void InstructionSet::cmc(mcs4::uint12_t) {
-    notImplErr(__FUNCTION__);
+    this->cpu->writeCarry(~this->cpu->readCarry());
 }
 
 void InstructionSet::cma(mcs4::uint12_t) {
-    notImplErr(__FUNCTION__);
+    this->cpu->writeAccumulator(~this->cpu->readAccumulator());
 }
 
 void InstructionSet::ral(mcs4::uint12_t) {
@@ -259,7 +281,8 @@ void InstructionSet::rar(mcs4::uint12_t) {
 }
 
 void InstructionSet::tcc(mcs4::uint12_t) {
-    notImplErr(__FUNCTION__);
+    this->cpu->writeAccumulator(this->cpu->readCarry());
+    this->cpu->writeCarry(0);
 }
 
 void InstructionSet::dac(mcs4::uint12_t) {
@@ -281,7 +304,7 @@ void InstructionSet::tcs(mcs4::uint12_t) {
 }
 
 void InstructionSet::stc(mcs4::uint12_t) {
-    notImplErr(__FUNCTION__);
+    this->cpu->writeCarry(1);
 }
 
 void InstructionSet::daa(mcs4::uint12_t) {
@@ -362,4 +385,12 @@ bool InstructionSet::isJumpInstruction(uint8_t instruction) {
 
 void InstructionSet::notImplErr(const char *opcode) {
     std::cerr << boost::to_upper_copy<std::string>(opcode) << " opcode not implemented" << std::endl;
+}
+
+mcs4::uint12_t InstructionSet::getAddresssOnPage(uint8_t addr) {
+    // Add the length of the current instruction to the code pointer and get the high 4-bits (current ROM page)
+    uint8_t instr_off = this->is2WordInstruction(this->cpu->readInstruction()) ? 2 : 1;
+    mcs4::uint4_t ah = h4b((mcs4::uint12_t) (this->cpu->readCodePtr() + instr_off));
+
+    return (ah << 8) | addr;
 }

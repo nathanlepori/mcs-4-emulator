@@ -6,7 +6,7 @@
 #define MCS_4_EMULATOR_CPU_H
 
 #include <cstddef>
-#include <stdint.h>
+#include <cstdint>
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
@@ -15,7 +15,7 @@
 #include "Rom.h"
 #include "Ram.h"
 #include "../InstructionSet.h"
-#include "../../mcs4_stdint.h"
+#include "../../common/mcs4_stdint.h"
 #include "../../SysInfo.h"
 
 class InstructionSet;
@@ -48,10 +48,6 @@ private:
     // Signal is sent to the outside world (i.e. debugger) when a CPU cycle starts
     boost::signals2::signal<void(SysInfo *)> cycle_sig;
 
-    uint8_t readInstruction();
-
-    uint8_t readSecondInstruction();
-
     void fetch(instr_p &instr, mcs4::uint12_t &modifier);
 
     void execute(instr_p instr, mcs4::uint12_t modifier);
@@ -67,9 +63,13 @@ public:
     Rom *const rom;
     Ram *const ram;
 
-    Cpu(Rom *const rom, Ram *const ram);
+    Cpu(Rom *rom, Ram *ram);
 
     virtual ~Cpu();
+
+    uint8_t readInstruction();
+
+    uint8_t readSecondInstruction();
 
     // Accumulator and carry
 

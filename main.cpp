@@ -78,6 +78,10 @@ int main(int argc, const char *const argv[]) {
     auto *chipset = new Chipset(prog, (uint8_t) num_roms, (uint8_t) num_rams);
     auto *debugger = new Debugger();
 
+    // DEBUG
+    debugger->setBreakpoint(0x2);
+    debugger->setBreakpoint(0xa);
+
     if (debug) {
         chipset->attachDebugger(debugger);
     }
