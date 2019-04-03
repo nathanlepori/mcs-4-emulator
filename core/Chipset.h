@@ -10,7 +10,7 @@
 #include "peripherals/Ram.h"
 #include "peripherals/Cpu.h"
 #include "peripherals/Rom.h"
-#include "../Debugger.h"
+#include "../debugger/Debugger.h"
 
 class Debugger;
 

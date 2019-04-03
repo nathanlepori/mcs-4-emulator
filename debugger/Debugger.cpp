@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "Debugger.h"
-#include "common/util.h"
+#include "../common/util.h"
 
 Debugger::Debugger(): chipset(nullptr) {}
 

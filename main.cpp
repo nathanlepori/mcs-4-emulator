@@ -4,7 +4,7 @@
 
 #include "config.h"
 #include "core/Chipset.h"
-#include "SpaceNotationProgramParser.h"
+#include "program_parser/SpaceNotationProgramParser.h"
 
 namespace po = boost::program_options;
 

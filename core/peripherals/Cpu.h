@@ -16,7 +16,7 @@
 #include "Ram.h"
 #include "../InstructionSet.h"
 #include "../../common/mcs4_stdint.h"
-#include "../../SysInfo.h"
+#include "../../debugger/SysInfo.h"
 
 class InstructionSet;
 

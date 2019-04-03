@@ -5,7 +5,7 @@
 #ifndef MCS_4_EMULATOR_CPUINFO_H
 #define MCS_4_EMULATOR_CPUINFO_H
 
-#include "core/peripherals/Cpu.h"
+#include "../core/peripherals/Cpu.h"
 #include "SysInfo.h"
 
 #define CPU_REG_NUM 16

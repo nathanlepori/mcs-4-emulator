@@ -10,7 +10,7 @@
 #include "../../common/util.h"
 #include "Rom.h"
 #include "Ram.h"
-#include "../../SysInfo.h"
+#include "../../debugger/SysInfo.h"
 
 Cpu::Cpu(Rom *const rom, Ram *const ram) :
         rom(rom),

@@ -5,7 +5,7 @@
 #ifndef MCS_4_EMULATOR_DEBUGGER_H
 #define MCS_4_EMULATOR_DEBUGGER_H
 
-#include "core/Chipset.h"
+#include "../core/Chipset.h"
 
 class Chipset;
 

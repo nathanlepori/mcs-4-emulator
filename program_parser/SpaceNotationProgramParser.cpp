@@ -7,8 +7,8 @@
 #include <boost/algorithm/string.hpp>
 #include <sstream>
 #include "SpaceNotationProgramParser.h"
-#include "common/mcs4_stdint.h"
-#include "core/peripherals/Rom.h"
+#include "../common/mcs4_stdint.h"
+#include "../core/peripherals/Rom.h"
 
 SpaceNotationProgramParser::SpaceNotationProgramParser(std::string filename) {
     if (filename.length() == 0) {

@@ -5,7 +5,7 @@
 #ifndef MCS_4_EMULATOR_PROGRAMPARSER_H
 #define MCS_4_EMULATOR_PROGRAMPARSER_H
 
-#include <stdint.h>
+#include <cstdint>
 
 class ProgramParser {
 public:

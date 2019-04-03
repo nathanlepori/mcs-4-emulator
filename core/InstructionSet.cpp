@@ -147,8 +147,11 @@ void InstructionSet::add(mcs4::uint12_t r) {
     this->cpu->writeAccumulatorAndCarry(v);
 }
 
-void InstructionSet::sub(mcs4::uint12_t) {
-    notImplErr(__FUNCTION__);
+void InstructionSet::sub(mcs4::uint12_t r) {
+    mcs4::uint4_t v =   this->cpu->readAccumulator() -
+                        this->cpu->readRegister(l4b(r)) +   // Mask to prevent registers overflow
+                        this->cpu->readCarry();
+    this->cpu->writeAccumulatorAndCarry(v);
 }
 
 void InstructionSet::ld(mcs4::uint12_t r) {
@@ -300,7 +303,12 @@ void InstructionSet::dac(mcs4::uint12_t) {
 }
 
 void InstructionSet::tcs(mcs4::uint12_t) {
-    notImplErr(__FUNCTION__);
+    if (this->cpu->readCarry() == 0) {
+        this->cpu->writeAccumulator(9);
+    } else {
+        this->cpu->writeAccumulator(10);
+    }
+    this->cpu->writeCarry(0);
 }
 
 void InstructionSet::stc(mcs4::uint12_t) {
@@ -389,7 +397,7 @@ void InstructionSet::notImplErr(const char *opcode) {
 
 mcs4::uint12_t InstructionSet::getAddresssOnPage(uint8_t addr) {
     // Add the length of the current instruction to the code pointer and get the high 4-bits (current ROM page)
-    uint8_t instr_off = this->is2WordInstruction(this->cpu->readInstruction()) ? 2 : 1;
+    uint8_t instr_off = (uint8_t) this->is2WordInstruction(this->cpu->readInstruction()) ? 2 : 1;
     mcs4::uint4_t ah = h4b((mcs4::uint12_t) (this->cpu->readCodePtr() + instr_off));
 
     return (ah << 8) | addr;
